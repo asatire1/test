@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Play - UberPadel</title>
+    <meta name="description" content="Start a casual padel tournament instantly. No account needed. Choose from Americano, Mexicano, Mix, or Team League formats.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/uberpadel-icon.svg">
+    <link rel="icon" type="image/png" sizes="512x512" href="/uberpadel-icon-512.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-light: #f9fafb;
+            --border: #e5e7eb;
+            --success: #10b981;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: var(--text);
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .header-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+        
+        /* Main */
+        .main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+        
+        /* Format Cards */
+        .formats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 640px) {
+            .formats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .format-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s ease;
+            display: block;
+        }
+        
+        .format-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.15);
+        }
+        
+        .format-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .format-emoji {
+            font-size: 2.5rem;
+        }
+        
+        .format-info h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .format-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .format-details {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .format-details ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        
+        .format-details li {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        
+        .format-details li::before {
+            content: "•";
+            color: var(--primary);
+        }
+        
+        .format-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .format-cta span {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .format-cta .arrow {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover {
+            color: var(--primary);
+        }
+        
+        /* My Tournaments */
+        .my-tournaments {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .tournaments-list {
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .tournament-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            transition: background 0.2s;
+        }
+        
+        .tournament-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tournament-item:hover {
+            background: var(--bg-light);
+        }
+        
+        .tournament-name {
+            font-weight: 500;
+        }
+        
+        .tournament-meta {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo-container">
+                <img src="/uberpadel-icon.svg" alt="UberPadel" class="logo-icon">
+                <span class="logo-text">UberPadel</span>
+            </a>
+            <span class="header-badge">🎮 Quick Play</span>
+        </div>
+    </header>
+    
+    <!-- Main -->
+    <main class="main">
+        <a href="/" class="back-link">
+            ← Back to Home
+        </a>
+        
+        <h1 class="page-title">Choose Your Format</h1>
+        <p class="page-subtitle">Select a tournament format to start playing</p>
+        
+        <div class="formats-grid">
+            <!-- Americano -->
+            <a href="/quick-play/americano/" class="format-card">
+                <div class="format-header">
+                    <span class="format-emoji">🔄</span>
+                    <div class="format-info">
+                        <h2>Americano</h2>
+                        <p>Partner with everyone once</p>
+                    </div>
+                </div>
+                <div class="format-details">
+                    <ul>
+                        <li>5-24 players</li>
+                        <li>1-6 courts</li>
+                        <li>Rotating partners</li>
+                        <li>Individual standings</li>
+                    </ul>
+                </div>
+                <div class="format-cta">
+                    <span>Create Tournament</span>
+                    <span class="arrow">→</span>
+                </div>
+            </a>
+            
+            <!-- Mexicano -->
+            <a href="/quick-play/mexicano/" class="format-card">
+                <div class="format-header">
+                    <span class="format-emoji">🎯</span>
+                    <div class="format-info">
+                        <h2>Mexicano</h2>
+                        <p>Standings-based pairing</p>
+                    </div>
+                </div>
+                <div class="format-details">
+                    <ul>
+                        <li>4-24 players</li>
+                        <li>Individual or teams</li>
+                        <li>Dynamic rounds</li>
+                        <li>Balanced matchups</li>
+                    </ul>
+                </div>
+                <div class="format-cta">
+                    <span>Create Tournament</span>
+                    <span class="arrow">→</span>
+                </div>
+            </a>
+            
+            <!-- Mix Tournament -->
+            <a href="/quick-play/mix/" class="format-card">
+                <div class="format-header">
+                    <span class="format-emoji">🏓</span>
+                    <div class="format-info">
+                        <h2>Mix Tournament</h2>
+                        <p>Round-robin + Knockout</p>
+                    </div>
+                </div>
+                <div class="format-details">
+                    <ul>
+                        <li>20, 24, or 28 players</li>
+                        <li>Pre-set fixtures</li>
+                        <li>Tournament points</li>
+                        <li>Knockout finals</li>
+                    </ul>
+                </div>
+                <div class="format-cta">
+                    <span>Create Tournament</span>
+                    <span class="arrow">→</span>
+                </div>
+            </a>
+            
+            <!-- Team League -->
+            <a href="/quick-play/team-league/" class="format-card">
+                <div class="format-header">
+                    <span class="format-emoji">👥</span>
+                    <div class="format-info">
+                        <h2>Team League</h2>
+                        <p>Team vs Team groups</p>
+                    </div>
+                </div>
+                <div class="format-details">
+                    <ul>
+                        <li>4-16 teams</li>
+                        <li>1 or 2 groups</li>
+                        <li>League table</li>
+                        <li>Knockout bracket</li>
+                    </ul>
+                </div>
+                <div class="format-cta">
+                    <span>Create Tournament</span>
+                    <span class="arrow">→</span>
+                </div>
+            </a>
+        </div>
+        
+        <!-- My Tournaments -->
+        <section class="my-tournaments">
+            <div class="section-header">
+                <h2 class="section-title">📋 My Recent Tournaments</h2>
+            </div>
+            <div class="tournaments-list" id="tournaments-list">
+                <div class="empty-state">
+                    <p>No tournaments yet. Create one above!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        // Load recent tournaments from localStorage
+        function loadMyTournaments() {
+            const list = document.getElementById('tournaments-list');
+            const allTournaments = [];
+            
+            // Check each format's storage
+            const storageKeys = [
+                { key: 'uber_padel_americano_tournaments', format: 'Americano', path: '/quick-play/americano/' },
+                { key: 'uber_padel_mexicano_tournaments', format: 'Mexicano', path: '/quick-play/mexicano/' },
+                { key: 'uber_padel_mix_tournaments', format: 'Mix', path: '/quick-play/mix/' },
+                { key: 'uber_padel_team_league_tournaments', format: 'Team League', path: '/quick-play/team-league/' }
+            ];
+            
+            storageKeys.forEach(({ key, format, path }) => {
+                try {
+                    const data = localStorage.getItem(key);
+                    if (data) {
+                        const tournaments = JSON.parse(data);
+                        tournaments.forEach(t => {
+                            allTournaments.push({
+                                ...t,
+                                format,
+                                path
+                            });
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error loading tournaments:', e);
+                }
+            });
+            
+            // Sort by date
+            allTournaments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            // Display
+            if (allTournaments.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <p>No tournaments yet. Create one above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = allTournaments.slice(0, 5).map(t => `
+                <a href="${t.path}?id=${t.id}" class="tournament-item">
+                    <div>
+                        <div class="tournament-name">${t.name || 'Unnamed Tournament'}</div>
+                        <div class="tournament-meta">${t.format} • ${formatDate(t.createdAt)}</div>
+                    </div>
+                    <span class="arrow">→</span>
+                </a>
+            `).join('');
+        }
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Unknown date';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { 
+                day: 'numeric', 
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+        
+        // Load on page ready
+        document.addEventListener('DOMContentLoaded', loadMyTournaments);
+    </script>
+</body>
+</html>

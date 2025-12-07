@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UberPadel - Tournament Management Made Easy</title>
+    <meta name="description" content="Free padel tournament management. Run Americano, Mexicano, Mix, and Team League tournaments with real-time scoring and standings.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/uberpadel-icon.svg">
+    <link rel="icon" type="image/png" sizes="512x512" href="/uberpadel-icon-512.png">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="UberPadel - Tournament Management">
+    <meta property="og:description" content="Free padel tournament management for Americano, Mexicano, Mix, and Team League formats.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://uberpadel.com">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --secondary: #0ea5e9;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-light: #f9fafb;
+            --border: #e5e7eb;
+            --success: #10b981;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .logo-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        /* Main Content */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .intro h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .intro p {
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Mode Selection */
+        .mode-selection {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        @media (min-width: 768px) {
+            .mode-selection {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .mode-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .mode-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.15);
+        }
+        
+        .mode-card.quick-play:hover {
+            border-color: var(--primary);
+        }
+        
+        .mode-card.competitions:hover {
+            border-color: var(--secondary);
+        }
+        
+        .mode-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .mode-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .mode-subtitle {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .mode-features {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+        
+        .mode-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+        
+        .mode-features li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #0284c7;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--text);
+            background: var(--bg-light);
+        }
+        
+        /* Format Section */
+        .formats-section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+        
+        .formats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .formats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .format-card {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+        
+        .format-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .format-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .format-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .format-desc {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        /* Coming Soon Badge */
+        .coming-soon {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 0.5rem;
+        }
+        
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .divider::before {
+            margin-right: 1rem;
+        }
+        
+        .divider::after {
+            margin-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="/uberpadel-icon.svg" alt="UberPadel" class="logo-icon">
+            <span class="logo-text">UberPadel</span>
+        </div>
+        <p class="tagline">Tournament Management Made Easy</p>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main">
+        <section class="intro">
+            <h1>How would you like to play?</h1>
+            <p>Choose your tournament style - casual sessions or scheduled competitions</p>
+        </section>
+        
+        <!-- Mode Selection -->
+        <section class="mode-selection">
+            <!-- Quick Play Card -->
+            <div class="mode-card quick-play">
+                <div class="mode-icon">🎮</div>
+                <h2 class="mode-title">Quick Play</h2>
+                <p class="mode-subtitle">Start a casual session right now</p>
+                
+                <ul class="mode-features">
+                    <li>No account needed</li>
+                    <li>You enter player names</li>
+                    <li>Share link with viewers</li>
+                    <li>Perfect for club nights</li>
+                </ul>
+                
+                <div class="mode-buttons">
+                    <a href="/quick-play/" class="btn btn-primary">
+                        🎾 Start Playing
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Competitions Card -->
+            <div class="mode-card competitions">
+                <div class="mode-icon">🏆</div>
+                <h2 class="mode-title">Competitions <span class="coming-soon">Coming Soon</span></h2>
+                <p class="mode-subtitle">Join scheduled tournaments</p>
+                
+                <ul class="mode-features">
+                    <li>Browse public events</li>
+                    <li>Register online</li>
+                    <li>Track your stats</li>
+                    <li>Build your ranking</li>
+                </ul>
+                
+                <div class="mode-buttons">
+                    <a href="/competitions/" class="btn btn-secondary">
+                        🔍 Browse Events
+                    </a>
+                    <a href="/competitions/create.html" class="btn btn-outline">
+                        📋 Organize
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <div class="divider">Available Formats</div>
+        
+        <!-- Formats Section -->
+        <section class="formats-section">
+            <div class="formats-grid">
+                <a href="/quick-play/americano/" class="format-card">
+                    <div class="format-emoji">🔄</div>
+                    <div class="format-name">Americano</div>
+                    <div class="format-desc">Partner with everyone</div>
+                </a>
+                
+                <a href="/quick-play/mexicano/" class="format-card">
+                    <div class="format-emoji">🎯</div>
+                    <div class="format-name">Mexicano</div>
+                    <div class="format-desc">Standings-based pairs</div>
+                </a>
+                
+                <a href="/quick-play/mix/" class="format-card">
+                    <div class="format-emoji">🏓</div>
+                    <div class="format-name">Mix Tournament</div>
+                    <div class="format-desc">Mixed doubles + knockout</div>
+                </a>
+                
+                <a href="/quick-play/team-league/" class="format-card">
+                    <div class="format-emoji">👥</div>
+                    <div class="format-name">Team League</div>
+                    <div class="format-desc">Team vs team groups</div>
+                </a>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <nav class="footer-links">
+            <a href="/about.html">About</a>
+            <a href="/login.html">Login</a>
+            <a href="https://github.com/uberpadel" target="_blank">GitHub</a>
+        </nav>
+        <p>© 2025 UberPadel. Free & Open Source.</p>
+    </footer>
+</body>
+</html>

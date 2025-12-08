@@ -19,7 +19,7 @@ let wizardData = {
 // ===== CREATE WIZARD =====
 
 /**
- * Show create tournament modal - Step 1: Basic Info
+ * Show create tournament modal - Step 1: Session Name
  */
 function showCreateModal() {
     wizardData = {
@@ -40,65 +40,86 @@ function showCreateModal() {
             <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-scale-in" onclick="event.stopPropagation()">
                 <div class="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-5 rounded-t-3xl">
                     <h2 class="text-xl font-bold text-white">🎯 Create Mexicano Session</h2>
-                    <p class="text-teal-100 text-sm mt-1">Step 1 of 4: Basic Info</p>
+                    <p class="text-teal-100 text-sm mt-1">Step 1 of 4: Session Name</p>
                 </div>
-                <div class="p-6">
-                    <div class="mb-5">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Session Name</label>
-                        <input type="text" id="create-name" 
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none" 
-                            placeholder="Friday Night Mexicano" maxlength="40" 
-                            onkeypress="if(event.key === 'Enter') goToStep2()" />
-                    </div>
-                    
-                    <div class="mb-5">
-                        <label class="block text-sm font-semibold text-gray-700 mb-3">Mode</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button type="button" onclick="selectMode('individual')" id="mode-individual" 
-                                class="p-4 rounded-xl border-2 border-teal-500 bg-teal-50 text-left transition-all">
-                                <div class="text-xl mb-1">🔄</div>
-                                <div class="font-semibold text-gray-800">Individual</div>
-                                <div class="text-xs text-gray-500">Rotating partners</div>
-                            </button>
-                            <button type="button" onclick="selectMode('team')" id="mode-team" 
-                                class="p-4 rounded-xl border-2 border-gray-200 text-left transition-all hover:border-gray-300">
-                                <div class="text-xl mb-1">👯</div>
-                                <div class="font-semibold text-gray-800">Team</div>
-                                <div class="text-xs text-gray-500">Fixed partners</div>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label class="block text-sm font-semibold text-gray-700 mb-3">Points Per Match</label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <button type="button" onclick="selectPoints(16)" id="points-16" 
-                                class="p-3 rounded-xl border-2 border-gray-200 text-center transition-all hover:border-gray-300">
-                                <div class="text-xl font-bold text-gray-800">16</div>
-                                <div class="text-xs text-gray-500">~8 min</div>
-                            </button>
-                            <button type="button" onclick="selectPoints(24)" id="points-24" 
-                                class="p-3 rounded-xl border-2 border-teal-500 bg-teal-50 text-center transition-all">
-                                <div class="text-xl font-bold text-gray-800">24</div>
-                                <div class="text-xs text-gray-500">~12 min</div>
-                            </button>
-                            <button type="button" onclick="selectPoints(32)" id="points-32" 
-                                class="p-3 rounded-xl border-2 border-gray-200 text-center transition-all hover:border-gray-300">
-                                <div class="text-xl font-bold text-gray-800">32</div>
-                                <div class="text-xs text-gray-500">~16 min</div>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="closeModal()" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">Cancel</button>
-                        <button onclick="goToStep2()" class="flex-1 py-3 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-semibold transition-colors">Next →</button>
-                    </div>
+                <div class="p-6" id="create-wizard-content">
+                    ${renderWizardStep1()}
                 </div>
             </div>
         </div>
     `;
     
+    setTimeout(() => document.getElementById('create-name')?.focus(), 100);
+}
+
+/**
+ * Wizard Step 1: Session Name
+ */
+function renderWizardStep1() {
+    return `
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Session Name</label>
+                <input type="text" id="create-name" 
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none transition-colors text-lg" 
+                    placeholder="e.g. Friday Night Mexicano" 
+                    value="${wizardData.name}"
+                    maxlength="40"
+                    onkeypress="if(event.key === 'Enter') goToStep2()" />
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors">Cancel</button>
+                <button onclick="goToStep2()" class="flex-1 px-5 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold transition-colors">Next →</button>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Go to Step 2: Mode Selection
+ */
+function goToStep2() {
+    const name = document.getElementById('create-name')?.value.trim() || wizardData.name;
+    if (!name) {
+        showToast('⚠️ Please enter a session name');
+        return;
+    }
+    wizardData.name = name;
+    
+    updateWizardHeader('Step 2 of 4: Game Mode');
+    document.getElementById('create-wizard-content').innerHTML = `
+        <div class="space-y-4">
+            <div class="text-center mb-2">
+                <span class="text-sm text-gray-500">${wizardData.name}</span>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3">Choose Mode</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="selectMode('individual')" id="mode-individual" 
+                        class="p-4 rounded-xl border-2 ${wizardData.mode === 'individual' ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-left transition-all">
+                        <div class="text-2xl mb-2">🔄</div>
+                        <div class="font-semibold text-gray-800">Individual</div>
+                        <div class="text-xs text-gray-500 mt-1">Rotating partners each round</div>
+                    </button>
+                    <button type="button" onclick="selectMode('team')" id="mode-team" 
+                        class="p-4 rounded-xl border-2 ${wizardData.mode === 'team' ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-left transition-all">
+                        <div class="text-2xl mb-2">👯</div>
+                        <div class="font-semibold text-gray-800">Team</div>
+                        <div class="text-xs text-gray-500 mt-1">Fixed partners throughout</div>
+                    </button>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="goBackToStep1()" class="flex-1 px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors">← Back</button>
+                <button onclick="goToStep3()" class="flex-1 px-5 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold transition-colors">Next →</button>
+            </div>
+        </div>
+    `;
+}
+
+function goBackToStep1() {
+    updateWizardHeader('Step 1 of 4: Session Name');
+    document.getElementById('create-wizard-content').innerHTML = renderWizardStep1();
     setTimeout(() => document.getElementById('create-name')?.focus(), 100);
 }
 
@@ -108,24 +129,78 @@ function selectMode(mode) {
     document.getElementById('mode-team').className = `p-4 rounded-xl border-2 ${mode === 'team' ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-left transition-all`;
 }
 
+/**
+ * Go to Step 3: Points Per Match
+ */
+function goToStep3() {
+    updateWizardHeader('Step 3 of 4: Points Per Match');
+    document.getElementById('create-wizard-content').innerHTML = `
+        <div class="space-y-4">
+            <div class="text-center mb-2">
+                <span class="text-sm text-gray-500">${wizardData.name} • ${wizardData.mode === 'individual' ? 'Individual' : 'Team'}</span>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3">Points Per Match</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button type="button" onclick="selectPoints(16)" id="points-16" 
+                        class="p-4 rounded-xl border-2 ${wizardData.pointsPerMatch === 16 ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-center transition-all">
+                        <div class="text-2xl font-bold text-gray-800">16</div>
+                        <div class="text-xs text-gray-500 mt-1">~8 min</div>
+                        <div class="text-xs text-teal-600 font-medium">Quick</div>
+                    </button>
+                    <button type="button" onclick="selectPoints(24)" id="points-24" 
+                        class="p-4 rounded-xl border-2 ${wizardData.pointsPerMatch === 24 ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-center transition-all">
+                        <div class="text-2xl font-bold text-gray-800">24</div>
+                        <div class="text-xs text-gray-500 mt-1">~12 min</div>
+                        <div class="text-xs text-teal-600 font-medium">Standard</div>
+                    </button>
+                    <button type="button" onclick="selectPoints(32)" id="points-32" 
+                        class="p-4 rounded-xl border-2 ${wizardData.pointsPerMatch === 32 ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-center transition-all">
+                        <div class="text-2xl font-bold text-gray-800">32</div>
+                        <div class="text-xs text-gray-500 mt-1">~16 min</div>
+                        <div class="text-xs text-teal-600 font-medium">Extended</div>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-3 text-center">Total points played per match (e.g., 16-8, 12-12)</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="goBackToStep2()" class="flex-1 px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors">← Back</button>
+                <button onclick="goToStep4()" class="flex-1 px-5 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold transition-colors">Next →</button>
+            </div>
+        </div>
+    `;
+}
+
+function goBackToStep2() {
+    goToStep2();
+}
+
+function goBackToStep3() {
+    goToStep3();
+}
+
 function selectPoints(pts) {
     wizardData.pointsPerMatch = pts;
     [16, 24, 32].forEach(p => {
-        document.getElementById(`points-${p}`).className = `p-3 rounded-xl border-2 ${p === pts ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-center transition-all`;
+        const el = document.getElementById(`points-${p}`);
+        if (el) {
+            el.className = `p-4 rounded-xl border-2 ${p === pts ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'} text-center transition-all`;
+        }
     });
 }
 
 /**
- * Step 2: Add Players/Teams
+ * Go to Step 4: Add Players
  */
-function goToStep2() {
-    const name = document.getElementById('create-name').value.trim();
-    if (!name) {
-        showToast('⚠️ Please enter a session name');
-        return;
-    }
-    wizardData.name = name;
+function goToStep4() {
     showAddPlayersModal();
+}
+
+function updateWizardHeader(stepText) {
+    const header = document.querySelector('.bg-gradient-to-r.from-teal-600 p');
+    if (header) {
+        header.textContent = stepText;
+    }
 }
 
 function showAddPlayersModal() {
@@ -164,7 +239,7 @@ function showAddPlayersModal() {
             <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-scale-in" onclick="event.stopPropagation()">
                 <div class="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-5 rounded-t-3xl">
                     <h2 class="text-xl font-bold text-white">${isTeam ? '👯 Add Teams' : '👥 Add Players'}</h2>
-                    <p class="text-teal-100 text-sm mt-1">Step 2 of 4: ${isTeam ? 'Teams' : 'Players'}</p>
+                    <p class="text-teal-100 text-sm mt-1">Step 4 of 4: ${isTeam ? 'Teams' : 'Players'}</p>
                 </div>
                 <div class="p-6">
                     <p class="text-gray-500 text-sm mb-2">${statusText}</p>
@@ -188,8 +263,8 @@ function showAddPlayersModal() {
                     </div>
                     
                     <div class="flex gap-3">
-                        <button onclick="showCreateModal()" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">← Back</button>
-                        <button onclick="goToStep3()" id="btn-next" class="flex-1 py-3 rounded-xl ${canProceed ? 'bg-teal-500 hover:bg-teal-600' : 'bg-gray-300'} text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed" ${!canProceed ? 'disabled' : ''}>
+                        <button onclick="goBackToStep3()" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">← Back</button>
+                        <button onclick="goToAccessModeStep()" id="btn-next" class="flex-1 py-3 rounded-xl ${canProceed ? 'bg-teal-500 hover:bg-teal-600' : 'bg-gray-300'} text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed" ${!canProceed ? 'disabled' : ''}>
                             Next (${items.length}) →
                         </button>
                     </div>
@@ -344,9 +419,9 @@ function refreshWizardPlayersList() {
 }
 
 /**
- * Step 3: Tournament Mode (who can join)
+ * Step 5: Tournament Mode (who can join)
  */
-function goToStep3() {
+function goToAccessModeStep() {
     const isTeam = wizardData.mode === 'team';
     const items = isTeam ? wizardData.teams : wizardData.players;
     const min = isTeam ? CONFIG.MIN_TEAMS : CONFIG.MIN_PLAYERS_INDIVIDUAL;
@@ -380,7 +455,7 @@ function goToStep3() {
             <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-scale-in" onclick="event.stopPropagation()">
                 <div class="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-5 rounded-t-3xl">
                     <h2 class="text-xl font-bold text-white">🌍 Who Can Join?</h2>
-                    <p class="text-teal-100 text-sm mt-1">Step 3 of 4: Access</p>
+                    <p class="text-teal-100 text-sm mt-1">Step 5 of 6: Access</p>
                 </div>
                 <div class="p-6">
                     <div class="text-center mb-4">
@@ -430,7 +505,7 @@ function goToStep3() {
                     
                     <div class="flex gap-3">
                         <button onclick="showAddPlayersModal()" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">← Back</button>
-                        <button onclick="goToStep4()" class="flex-1 py-3 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-semibold transition-colors">Next →</button>
+                        <button onclick="goToPasscodeStep()" class="flex-1 py-3 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-semibold transition-colors">Next →</button>
                     </div>
                 </div>
             </div>
@@ -482,9 +557,9 @@ function getCurrentUser() {
 }
 
 /**
- * Step 4: Passcode
+ * Step 6: Passcode
  */
-function goToStep4() {
+function goToPasscodeStep() {
     const accessMode = document.getElementById('selected-access-mode')?.value || 'anyone';
     wizardData.accessMode = accessMode;
     
@@ -506,7 +581,7 @@ function goToStep4() {
             <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full animate-scale-in" onclick="event.stopPropagation()">
                 <div class="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-5 rounded-t-3xl">
                     <h2 class="text-xl font-bold text-white">🔐 Organiser Passcode</h2>
-                    <p class="text-teal-100 text-sm mt-1">Step 4 of 4: Security</p>
+                    <p class="text-teal-100 text-sm mt-1">Step 6 of 6: Security</p>
                 </div>
                 <div class="p-6">
                     <div class="text-center mb-4">
@@ -523,7 +598,7 @@ function goToStep4() {
                     </div>
                     
                     <div class="flex gap-3">
-                        <button onclick="goToStep3()" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">← Back</button>
+                        <button onclick="goToAccessModeStep()" class="flex-1 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">← Back</button>
                         <button onclick="handleCreateTournament()" class="flex-1 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-semibold transition-colors">Create ✓</button>
                     </div>
                 </div>

@@ -22,7 +22,7 @@
     <meta name="language" content="English">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://uberpadel.com/team-league/">
+    <link rel="canonical" href="https://uberpadel.com/quick-play/team-league/">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
@@ -30,7 +30,7 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://uberpadel.com/team-league/">
+    <meta property="og:url" content="https://uberpadel.com/quick-play/team-league/">
     <meta property="og:title" content="Team Tournament - Uber Padel">
     <meta property="og:description" content="Run team-based padel leagues with fixed partner pairs. Group stages, knockout rounds, and real-time scoring.">
     <meta property="og:image" content="https://uberpadel.com/og-image-team.png">
@@ -41,7 +41,7 @@
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://uberpadel.com/team-league/">
+    <meta name="twitter:url" content="https://uberpadel.com/quick-play/team-league/">
     <meta name="twitter:title" content="Team Tournament - Uber Padel">
     <meta name="twitter:description" content="Run team-based padel leagues with fixed partner pairs. Group stages, knockout rounds.">
     <meta name="twitter:image" content="https://uberpadel.com/og-image-team.png">
@@ -135,14 +135,17 @@
     <!-- JavaScript Files - Load in correct order -->
     <script src="./js/config.js"></script>
     <script src="./js/firebase-config.js"></script>
-    <script src="/src/core/organizer-auth.js"></script>
+    <script src="../../src/core/organizer-auth.js"></script>
+    
+    <!-- Shared Engines (Phase 3) -->
+    <script src="../../src/engines/BaseEngine.js"></script>
+    <script src="../../src/engines/TeamLeagueEngine.js"></script>
+    
     <script src="./js/router.js"></script>
     <script src="./js/state.js"></script>
     <script src="./js/components.js"></script>
     <script src="./js/handlers.js"></script>
     <script src="./js/landing.js"></script>
     <script src="./js/main.js"></script>
-    <!-- Competition Integration -->
-    <script src="/src/core/competition-mode.js"></script>
 </body>
 </html>

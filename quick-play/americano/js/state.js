@@ -709,8 +709,39 @@ class AmericanoState {
     /**
      * Calculate standings with W/L/PD (Team League style)
      * Uses fixture-based scoring for accurate results
+     * 
+     * Phase 3: Now uses shared AmericanoEngine for calculations
      */
     calculateStandings() {
+        const fixtures = getFixtures(this.playerCount, this.courtCount);
+        
+        // Use shared engine for calculations
+        return AmericanoEngine.calculateStandings({
+            playerNames: this.playerNames,
+            fixtures: fixtures,
+            scores: this.scores
+        });
+    }
+    
+    /**
+     * Count completed matches
+     * 
+     * Phase 3: Now uses shared BaseEngine
+     */
+    countCompletedMatches() {
+        const fixtures = getFixtures(this.playerCount, this.courtCount);
+        return BaseEngine.countCompletedMatches(
+            fixtures,
+            this.scores,
+            (match, index) => `f_${index}`
+        );
+    }
+    
+    /**
+     * DEPRECATED - Keeping for backward compatibility
+     * Original inline implementation moved to AmericanoEngine
+     */
+    _calculateStandingsLegacy() {
         const playerStats = Array(this.playerCount).fill(null).map(() => ({
             totalScore: 0,
             gamesPlayed: 0,
@@ -804,10 +835,7 @@ class AmericanoState {
     }
     
     /**
-     * Count completed matches
-     */
-    countCompletedMatches() {
-        let count = 0;
+     * Get total number of matches (fixtures)
         const fixtures = getFixtures(this.playerCount, this.courtCount);
         fixtures.forEach((_, fixtureIndex) => {
             const score = this.getScoreByFixture(fixtureIndex);

@@ -325,39 +325,53 @@ const CompetitionService = {
     async create(data) {
         this.init();
         
+        console.log('CompetitionService.create called with:', data);
+        
+        // Validate required fields
+        if (!data.name || !data.name.trim()) {
+            throw new Error('Competition name is required');
+        }
+        if (!data.format) {
+            throw new Error('Competition format is required');
+        }
+        if (!data.organizerId) {
+            throw new Error('Organizer ID is required');
+        }
+        
         const id = this._generateId();
         const organiserKey = this._generateOrganiserKey();
         
+        // Build competition object with safe defaults (Firebase rejects undefined)
         const competition = {
             meta: {
                 id,
-                name: data.name,
+                name: data.name.trim(),
                 description: data.description || '',
                 format: data.format,
                 status: this.STATUS.DRAFT,
                 
-                // Event details
-                eventDate: data.eventDate,
-                eventTime: data.eventTime,
-                location: data.location,
+                // Event details (use null instead of undefined)
+                eventDate: data.eventDate || null,
+                eventTime: data.eventTime || null,
+                location: data.location || '',
                 
-                // Player settings
-                minPlayers: data.minPlayers || this._getDefaultMinPlayers(data.format),
-                maxPlayers: data.maxPlayers || this._getDefaultMaxPlayers(data.format),
+                // Player settings - ensure integers
+                minPlayers: parseInt(data.minPlayers) || this._getDefaultMinPlayers(data.format),
+                maxPlayers: parseInt(data.maxPlayers) || this._getDefaultMaxPlayers(data.format),
                 
-                // Level restrictions
-                minLevel: data.minLevel || 0,
-                maxLevel: data.maxLevel || 10,
+                // Level restrictions - ensure numbers
+                minLevel: parseFloat(data.minLevel) || 0,
+                maxLevel: parseFloat(data.maxLevel) || 10,
                 accessRestriction: data.accessRestriction || this.ACCESS.ANYONE,
                 
-                // Format-specific settings
-                courts: data.courts,
-                pointsPerGame: data.pointsPerGame || 32,
-                roundCount: data.roundCount,
+                // Format-specific settings (use null instead of undefined)
+                courts: parseInt(data.courts) || 4,
+                pointsPerGame: parseInt(data.pointsPerGame) || 32,
+                roundCount: data.roundCount !== undefined ? data.roundCount : null,
                 
                 // Organizer
                 organizerId: data.organizerId,
-                organizerName: data.organizerName,
+                organizerName: data.organizerName || 'Unknown',
                 organiserKey,
                 
                 // Timestamps
@@ -369,12 +383,38 @@ const CompetitionService = {
             standings: {}
         };
         
-        await this._database
-            .ref(`${this.config.COMPETITIONS_DB_PATH}/${id}`)
-            .set(competition);
+        console.log('Saving competition to Firebase:', competition);
         
-        competition.id = id;
-        return { competition, organiserKey };
+        // Sanitize object - remove undefined values (Firebase rejects them)
+        const sanitize = (obj) => {
+            const result = {};
+            for (const [key, value] of Object.entries(obj)) {
+                if (value === undefined) continue;
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                    result[key] = sanitize(value);
+                } else {
+                    result[key] = value;
+                }
+            }
+            return result;
+        };
+        
+        const sanitizedCompetition = sanitize(competition);
+        console.log('Sanitized competition:', sanitizedCompetition);
+        
+        try {
+            await this._database
+                .ref(`${this.config.COMPETITIONS_DB_PATH}/${id}`)
+                .set(sanitizedCompetition);
+            
+            console.log('Competition created successfully with ID:', id);
+            
+            competition.id = id;
+            return { competition, organiserKey };
+        } catch (firebaseError) {
+            console.error('Firebase error:', firebaseError);
+            throw new Error(`Database error: ${firebaseError.message}`);
+        }
     },
     
     /**
@@ -493,16 +533,38 @@ const CompetitionService = {
             throw new Error('Competition is full');
         }
         
-        // Check if already registered
+        // Check if already registered by ID
         if (comp.registeredPlayers && comp.registeredPlayers[player.id]) {
-            throw new Error('Already registered');
+            throw new Error('You are already registered');
         }
         
-        // Register player
+        // Check if already registered by email (for registered users)
+        if (player.email && comp.registeredPlayers) {
+            const existingByEmail = Object.values(comp.registeredPlayers).find(
+                p => p.email && p.email.toLowerCase() === player.email.toLowerCase()
+            );
+            if (existingByEmail) {
+                throw new Error('This email is already registered for this competition');
+            }
+        }
+        
+        // Check if already registered by name (for guests - warn but allow)
+        if (comp.registeredPlayers) {
+            const existingByName = Object.values(comp.registeredPlayers).find(
+                p => p.name.toLowerCase() === player.name.toLowerCase()
+            );
+            if (existingByName) {
+                // For guests, allow but warn (they might be re-registering from a different device)
+                console.warn(`Player with name "${player.name}" already registered`);
+            }
+        }
+        
+        // Register player (use null instead of undefined - Firebase rejects undefined)
         const registration = {
             id: player.id,
             name: player.name,
-            level: player.level,
+            email: player.email || null,
+            level: player.level !== undefined ? player.level : null,
             registeredAt: new Date().toISOString()
         };
         

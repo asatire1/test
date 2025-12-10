@@ -107,7 +107,9 @@
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="account/auth-service.js"></script>
     
     <style>
         * {
@@ -273,16 +275,16 @@
         /* Tournament Cards */
         .tournament-card {
             background: white;
-            border-radius: 16px;
-            padding: 20px;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.2s ease;
             border: 1px solid #E5E7EB;
         }
         
         .tournament-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
-            border-color: #3B82F6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+            border-color: #D1D5DB;
         }
         
         /* Gradient text */
@@ -364,10 +366,24 @@
                     <span class="font-bold text-lg text-gray-800">Uber Padel</span>
                 </a>
                 <div class="flex items-center gap-3 md:gap-6">
-                    <a href="#quick-play" class="text-gray-600 hover:text-blue-600 font-medium text-sm md:text-base transition-colors">Quick Play</a>
-                    <a href="competitions/browse.html" class="text-gray-600 hover:text-purple-600 font-medium text-sm md:text-base transition-colors">Competitions</a>
-                    <a href="account/profile.html" class="hidden md:inline text-gray-600 hover:text-blue-600 font-medium transition-colors">My Account</a>
-                    <a href="account/login.html" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors">
+                    <a href="#quick-play" class="text-blue-600 hover:text-blue-700 font-medium text-sm md:text-base transition-colors">Quick Play</a>
+                    <a href="competitions/browse.html" class="text-purple-600 hover:text-purple-700 font-medium text-sm md:text-base transition-colors">Competitions</a>
+                    
+                    <!-- Signed In State -->
+                    <div id="nav-signed-in" class="hidden items-center gap-3">
+                        <a href="account/profile.html" class="flex items-center gap-2 text-gray-600 hover:text-blue-600 font-medium text-sm transition-colors">
+                            <span id="nav-user-initial" class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">?</span>
+                            <span id="nav-user-name" class="hidden md:inline">Account</span>
+                        </a>
+                        <button onclick="handleNavSignOut()" class="text-gray-400 hover:text-red-500 transition-colors" title="Sign out">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Signed Out State -->
+                    <a href="account/login.html" id="nav-sign-in" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors">
                         Sign In
                     </a>
                 </div>
@@ -752,14 +768,14 @@
                     </div>
                     <h3 class="font-semibold text-gray-800">Mix</h3>
                 </div>
-                <div id="tournament-list-24" class="space-y-3">
+                <div id="tournament-list-24" class="space-y-2">
                     <!-- Loading skeleton -->
                     <div class="tournament-card">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl skeleton"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl skeleton"></div>
                             <div class="flex-1">
-                                <div class="h-5 w-32 skeleton rounded mb-2"></div>
-                                <div class="h-4 w-24 skeleton rounded"></div>
+                                <div class="h-4 w-24 skeleton rounded mb-1.5"></div>
+                                <div class="h-3 w-20 skeleton rounded"></div>
                             </div>
                         </div>
                     </div>
@@ -774,14 +790,14 @@
                     </div>
                     <h3 class="font-semibold text-gray-800">Team Tournaments</h3>
                 </div>
-                <div id="tournament-list-team" class="space-y-3">
+                <div id="tournament-list-team" class="space-y-2">
                     <!-- Loading skeleton -->
                     <div class="tournament-card">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl skeleton"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl skeleton"></div>
                             <div class="flex-1">
-                                <div class="h-5 w-32 skeleton rounded mb-2"></div>
-                                <div class="h-4 w-24 skeleton rounded"></div>
+                                <div class="h-4 w-24 skeleton rounded mb-1.5"></div>
+                                <div class="h-3 w-20 skeleton rounded"></div>
                             </div>
                         </div>
                     </div>
@@ -796,14 +812,14 @@
                     </div>
                     <h3 class="font-semibold text-gray-800">Americano</h3>
                 </div>
-                <div id="tournament-list-americano" class="space-y-3">
+                <div id="tournament-list-americano" class="space-y-2">
                     <!-- Loading skeleton -->
                     <div class="tournament-card">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl skeleton"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl skeleton"></div>
                             <div class="flex-1">
-                                <div class="h-5 w-32 skeleton rounded mb-2"></div>
-                                <div class="h-4 w-24 skeleton rounded"></div>
+                                <div class="h-4 w-24 skeleton rounded mb-1.5"></div>
+                                <div class="h-3 w-20 skeleton rounded"></div>
                             </div>
                         </div>
                     </div>
@@ -818,14 +834,14 @@
                     </div>
                     <h3 class="font-semibold text-gray-800">Mexicano</h3>
                 </div>
-                <div id="tournament-list-mexicano" class="space-y-3">
+                <div id="tournament-list-mexicano" class="space-y-2">
                     <!-- Loading skeleton -->
                     <div class="tournament-card">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl skeleton"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl skeleton"></div>
                             <div class="flex-1">
-                                <div class="h-5 w-32 skeleton rounded mb-2"></div>
-                                <div class="h-4 w-24 skeleton rounded"></div>
+                                <div class="h-4 w-24 skeleton rounded mb-1.5"></div>
+                                <div class="h-3 w-20 skeleton rounded"></div>
                             </div>
                         </div>
                     </div>
@@ -950,6 +966,59 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
+        // ===== AUTH & NAV =====
+        
+        let currentUser = null;
+        
+        async function initAuth() {
+            console.log('Initializing auth...');
+            await AuthService.init();
+            currentUser = AuthService.getCurrentUser();
+            console.log('Current user after init:', currentUser);
+            updateNavDisplay();
+            
+            // Also listen for auth changes
+            AuthService.onAuthStateChanged((user) => {
+                console.log('Auth state changed:', user);
+                currentUser = user;
+                updateNavDisplay();
+            });
+        }
+        
+        function updateNavDisplay() {
+            const navSignedIn = document.getElementById('nav-signed-in');
+            const navSignIn = document.getElementById('nav-sign-in');
+            const navUserInitial = document.getElementById('nav-user-initial');
+            const navUserName = document.getElementById('nav-user-name');
+            
+            console.log('updateNavDisplay called, currentUser:', currentUser);
+            
+            if (currentUser) {
+                // Show signed in state - use explicit style to override any CSS
+                navSignedIn.style.display = 'flex';
+                navSignIn.style.display = 'none';
+                
+                navUserInitial.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : '?';
+                navUserName.textContent = currentUser.name || 'Account';
+                console.log('Showing signed-in nav for:', currentUser.name);
+            } else {
+                // Show signed out state
+                navSignedIn.style.display = 'none';
+                navSignIn.style.display = '';
+                console.log('Showing sign-in button');
+            }
+        }
+        
+        async function handleNavSignOut() {
+            await AuthService.signOut();
+            currentUser = null;
+            updateNavDisplay();
+            showToast('Signed out successfully');
+        }
+        
+        // Initialize auth on page load
+        initAuth();
+        
         // ===== LOAD RECENT TOURNAMENTS =====
         
         async function loadRecentTournaments() {
@@ -1010,7 +1079,7 @@
             
             // Load Americano Tournaments
             try {
-                const snapshot = await database.ref('americano')
+                const snapshot = await database.ref('americano-tournaments')
                     .orderByChild('meta/updatedAt')
                     .limitToLast(5)
                     .once('value');
@@ -1038,7 +1107,7 @@
             
             // Load Mexicano Tournaments
             try {
-                const snapshot = await database.ref('mexicano')
+                const snapshot = await database.ref('mexicano-tournaments')
                     .orderByChild('meta/updatedAt')
                     .limitToLast(5)
                     .once('value');
@@ -1081,23 +1150,21 @@
             
             container.innerHTML = tournaments.map(t => `
                 <a href="./quick-play/tournament/#/t/${t.id}" class="tournament-card block group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">
                             ${t.name.charAt(0).toUpperCase()}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">${t.name}</h4>
-                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <h4 class="font-semibold text-gray-900 truncate text-sm">${t.name}</h4>
+                            <div class="flex items-center gap-1.5 text-xs text-gray-500">
                                 <span class="font-mono font-medium text-blue-600">${t.id.toUpperCase()}</span>
                                 <span class="text-gray-300">•</span>
                                 <span>${formatTimeAgo(t.updatedAt)}</span>
                             </div>
                         </div>
-                        <div class="text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
+                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
                 </a>
             `).join('');
@@ -1119,13 +1186,13 @@
             
             container.innerHTML = tournaments.map(t => `
                 <a href="./quick-play/team-league/#/t/${t.id}" class="tournament-card block group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">
                             ${t.name.charAt(0).toUpperCase()}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-semibold text-gray-900 truncate group-hover:text-pink-600 transition-colors">${t.name}</h4>
-                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <h4 class="font-semibold text-gray-900 truncate text-sm">${t.name}</h4>
+                            <div class="flex items-center gap-1.5 text-xs text-gray-500">
                                 <span class="font-mono font-medium text-pink-600">${t.id.toUpperCase()}</span>
                                 <span class="text-gray-300">•</span>
                                 <span>${t.teamCount} teams</span>
@@ -1133,11 +1200,9 @@
                                 <span>${formatTimeAgo(t.updatedAt)}</span>
                             </div>
                         </div>
-                        <div class="text-gray-300 group-hover:text-pink-500 group-hover:translate-x-1 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
+                        <svg class="w-4 h-4 text-gray-300 group-hover:text-pink-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
                 </a>
             `).join('');
@@ -1159,13 +1224,13 @@
             
             container.innerHTML = tournaments.map(t => `
                 <a href="./quick-play/americano/#/t/${t.id}" class="tournament-card block group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">
                             ${t.name.charAt(0).toUpperCase()}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-semibold text-gray-900 truncate group-hover:text-purple-600 transition-colors">${t.name}</h4>
-                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <h4 class="font-semibold text-gray-900 truncate text-sm">${t.name}</h4>
+                            <div class="flex items-center gap-1.5 text-xs text-gray-500">
                                 <span class="font-mono font-medium text-purple-600">${t.id.toUpperCase()}</span>
                                 <span class="text-gray-300">•</span>
                                 <span>${t.playerCount} players</span>
@@ -1173,11 +1238,9 @@
                                 <span>${formatTimeAgo(t.updatedAt)}</span>
                             </div>
                         </div>
-                        <div class="text-gray-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
+                        <svg class="w-4 h-4 text-gray-300 group-hover:text-purple-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
                 </a>
             `).join('');
@@ -1199,13 +1262,13 @@
             
             container.innerHTML = tournaments.map(t => `
                 <a href="./quick-play/mexicano/#/t/${t.id}" class="tournament-card block group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">
                             ${t.name.charAt(0).toUpperCase()}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-semibold text-gray-900 truncate group-hover:text-teal-600 transition-colors">${t.name}</h4>
-                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <h4 class="font-semibold text-gray-900 truncate text-sm">${t.name}</h4>
+                            <div class="flex items-center gap-1.5 text-xs text-gray-500">
                                 <span class="font-mono font-medium text-teal-600">${t.id.toUpperCase()}</span>
                                 <span class="text-gray-300">•</span>
                                 <span>${t.playerCount} players</span>
@@ -1213,11 +1276,9 @@
                                 <span>${formatTimeAgo(t.updatedAt)}</span>
                             </div>
                         </div>
-                        <div class="text-gray-300 group-hover:text-teal-500 group-hover:translate-x-1 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
+                        <svg class="w-4 h-4 text-gray-300 group-hover:text-teal-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
                 </a>
             `).join('');
@@ -1306,7 +1367,7 @@
             
             // Check if it's an Americano tournament
             try {
-                const snapshotAm = await database.ref(`americano/${code}/meta`).once('value');
+                const snapshotAm = await database.ref(`americano-tournaments/${code}/meta`).once('value');
                 if (snapshotAm.exists()) {
                     window.location.href = `./quick-play/americano/#/t/${code}`;
                     return;
@@ -1317,7 +1378,7 @@
             
             // Check if it's a Mexicano tournament
             try {
-                const snapshotMex = await database.ref(`mexicano/${code}/meta`).once('value');
+                const snapshotMex = await database.ref(`mexicano-tournaments/${code}/meta`).once('value');
                 if (snapshotMex.exists()) {
                     window.location.href = `./quick-play/mexicano/#/t/${code}`;
                     return;

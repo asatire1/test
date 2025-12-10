@@ -3,11 +3,11 @@
     // Users - for auth system
     "users": {
       ".read": true,
-      ".indexOn": ["googleUid", "authUid"],
+      ".write": true,
+      ".indexOn": ["googleUid", "authUid", "email"],
       "$userId": {
-        ".write": true,
-        ".validate": "newData.hasChildren(['name', 'type'])",
-        
+        // Validation only on create (when name and type must exist)
+        // Updates are allowed without full validation
         "name": {
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 50"
         },
@@ -37,42 +37,45 @@
         },
         "phone": {
           ".validate": "newData.isString() || newData.val() == null"
+        },
+        "isOrganizer": {
+          ".validate": "newData.isBoolean()"
         }
       }
     },
     
     // Tournament data - existing rules (Mix format)
     "tournaments": {
-      ".indexOn": ["meta/organizerUid"],
+      ".read": true,
+      ".indexOn": ["meta/organizerUid", "meta/updatedAt", "meta/createdAt"],
       "$tournamentId": {
-        ".read": true,
         ".write": true
       }
     },
     
     // Americano tournaments
     "americano-tournaments": {
-      ".indexOn": ["meta/organizerUid"],
+      ".read": true,
+      ".indexOn": ["meta/organizerUid", "meta/updatedAt", "meta/createdAt"],
       "$tournamentId": {
-        ".read": true,
         ".write": true
       }
     },
     
     // Mexicano tournaments
     "mexicano-tournaments": {
-      ".indexOn": ["meta/organizerUid"],
+      ".read": true,
+      ".indexOn": ["meta/organizerUid", "meta/updatedAt", "meta/createdAt"],
       "$tournamentId": {
-        ".read": true,
         ".write": true
       }
     },
     
     // Team League tournaments
     "team-tournaments": {
-      ".indexOn": ["meta/organizerUid"],
+      ".read": true,
+      ".indexOn": ["meta/organizerUid", "meta/updatedAt", "meta/createdAt"],
       "$tournamentId": {
-        ".read": true,
         ".write": true
       }
     },
